@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} Search results : ({{ questions|length }}) {% endblock title %} 
+
+{% block body %}
+
+<h1 class="m-4">Search results :- ({{ questions|length }}) </h1>
+
+{% if questions|length > 0 %}
+{% for question in questions %}
+
+
+      <div class="container border border-light mt-4 p-4 shadow-sm">
+        <h3 class="title">{{ question.title }}</h3>
+        <p>{{ question.desc }}</p>
+        <a type="submit" role="button" title="comment" data-toggle="collapse" data-target="#comment{{ question.id }}" aria-expanded="false" aria-controls="comment{{ question.id }}">
+          <div class="comment-section">
+          <img src="{% static "comment.svg" %}"></a>
+          <p>Date :- {{ question.date }}</p>
+        </div>
+        <div class="collapse mt-2" id="comment{{ question.id }}">
+          <div class="card card-body">
+            {% if  user.is_authenticated %}
+            <form action="/addcomment" method="GET">
+              <textarea class="p-2" name="newComment" id="newComment" placeholder="Enter your comment here..." required style="width: 100%; height: 100px;"></textarea>  
+              <input type="hidden" name="questionId" id="questionId" value="{{ question.id }}">
+              <input type="hidden" name="parentId" id="parentId" value="{{ comment.id }}">
+              <br>
+              <button type="submit" class="btn btn-danger mb-2">Post Comment</button>  
+            </form>
+            {% else %}
+            <h4 class="text-muted">Login to post comments</h4>
+            {% endif %}
+            {% for comment in comments %}
+              {% if question.id == comment.question.id %}
+            <div class="row m-2">
+            <img src="{%static 'profile.png'%}" style="width: 31px;">
+            <h5 class="ml-2">{{ comment.user.username }}</h5>
+          </div>
+            <p class="m-2">{{ comment.comment }}</p>
+            {% endif %}
+      {% endfor %}
+          </div>
+        </div>
+      </div>
+{% endfor %}
+{% else %}
+
+<div class="container my-6">
+    <hr class="text-center mb-4" style="border: 2px solid red;">
+    <h1 class="text-center text-danger mb-4">Sorry we could not find any results.</h1>
+    <ul class="text-center text-danger mb-4" style="list-style: none;">
+        <li>Make sure that all words are spelled correctly.</li>
+        <li>Try different keywords.</li>
+        <li>Try more general keywords.</li>
+        <li>Try fewer keywords.</li>
+    </ul>
+    <hr class="text-center" style="border: 2px solid red">
+    </div>
+
+
+
+{% endif %}
+
+
+{% endblock body %}
